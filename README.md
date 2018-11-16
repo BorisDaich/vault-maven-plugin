@@ -2,6 +2,24 @@
 
 This Maven plugin supports pull and pushing Maven project properties from secrets stored in [HashiCorp](https://www.hashicorp.com) [Vault](https://www.vaultproject.io/).
 
+This is deeply reworked fork of the https://github.com/DecipherNow/vault-maven-plugin 
+
+Important changes:
+
+Support for the Vault's RoleId & SecretId flow see here https://www.vaultproject.io/docs/auth/approle.html
+
+Support for token, RoleId, SecretId to be configured as properties in the user's ~/.m2/settings.xml
+
+that let you have no credentials in the source control.
+
+TODO: Boris: 
+
+- [ ] Document the usage 
+
+- [ ] Provide examples 
+
+ 
+
 ## Usage
 
 To include the vault-maven-plugin in your project add the following plugin to your `pom.xml` file:

@@ -1,16 +1,81 @@
-# Eclipse
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+.nb-gradle/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### eclipse #### 
+target/
 .classpath
 .project
-.settings/
+.springBeans
+/.settings/bin/
+/.factorypath
+.metadata/*
+.settings
+/bin/
 
-# Intellij
-.idea/
-*.iml
-*.iws
-
-# Mac
+### OTHER  ####
+**/build/***.swp
+**/build/**.DS_Store
+*.log
+*.log.1
 .DS_Store
+.DT_Store
+.metadata/*
+.nb-gradle/
+.nb-gradle//bin/
+.nb-gradle//build/*
+.sass-cache
+/*.log
+/*.settings
+/*.settings/bin/
+/*.settings/build/*
+/*.settingsnode
+/*/*/target/*
+/*/build/*
+/*/build/*/*
+/*/PaymentSystemGit/*
+/*/target/*
+/.idea/
 
-# Maven
-log/
-target/
+/build/*
+/idea/
+/node/**
+/test-out/
+build/
+dist/
+nbbuild/
+nbdist/
+nbproject/private/
+node
+node_modules
+node_modules.sass-cache
+node_modules/
+npm-debug.log
+riggoh-test.iml
+src/main/resources/META-INF/resources
+src/main/resources/META-INF/resourcesnode
+src\main\resources\META-INF\resources

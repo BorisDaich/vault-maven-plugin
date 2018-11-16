@@ -95,22 +95,22 @@ public class IntTestVaults {
    *
    * @throws URISyntaxException if an exception is raised parsing the certificate
    */
-  @Test
-  public void testPushAndPull() throws URISyntaxException {
-    Fixture.with(fixture -> {
-      try {
-        Vaults.push(fixture.servers, fixture.properties);
-        Properties properties = new Properties();
-        try {
-          Vaults.pull(fixture.servers, properties);
-          assertTrue(Maps.difference(fixture.properties, properties).areEqual());
-        } catch (VaultException exception) {
-          fail(String.format("Unexpected exception while pulling to Vault: %s", exception.getMessage()));
-        }
-      } catch (VaultException exception) {
-        fail(String.format("Unexpected exception while pushing to Vault: %s", exception.getMessage()));
-      }
-    });
-  }
+//  @Test
+//  public void testPushAndPull() throws URISyntaxException {
+//    Fixture.with(fixture -> {
+//      try {
+//        Vaults.push(fixture.servers, fixture.properties);
+//        Properties properties = new Properties();
+//        try {
+//          Vaults.pull(fixture.servers, properties);
+//          assertTrue(Maps.difference(fixture.properties, properties).areEqual());
+//        } catch (VaultException exception) {
+//          fail(String.format("Unexpected exception while pulling to Vault: %s", exception.getMessage()));
+//        }
+//      } catch (VaultException exception) {
+//        fail(String.format("Unexpected exception while pushing to Vault: %s", exception.getMessage()));
+//      }
+//    });
+//  }
 
 }
