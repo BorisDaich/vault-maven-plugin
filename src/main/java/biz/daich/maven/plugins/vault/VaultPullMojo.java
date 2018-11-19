@@ -53,12 +53,12 @@ import lombok.Setter;
 @Mojo(name = "pull", defaultPhase = LifecyclePhase.INITIALIZE)
 public class VaultPullMojo extends AbstractMojo {
 
-	@Setter// setter and getter are for testing convenience
+	// getter is for testing convenience
 	@Getter
-	@Parameter(defaultValue = "${project}", readonly = true)
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
 
-	@Setter// setter and getter are for testing convenience
+	// getter is for testing convenience
 	@Getter
 	@Parameter(required = true)
 	protected List<Server> servers;
@@ -98,6 +98,23 @@ public class VaultPullMojo extends AbstractMojo {
 		}
 	}
 
+	public VaultPullMojo() {
+		super();
+	}
+
+	/**
+	 * c'tor for testing
+	 * 
+	 * will set the IVaultFactory vaultFactory only if argument is not null
+	 */
+	protected VaultPullMojo(MavenProject project, List<Server> servers, IVaultFactory vaultFactory) {
+		super();
+		this.project = project;
+		this.servers = servers;
+		if (vaultFactory != null)
+			this.vaultFactory = vaultFactory;
+	}
+
 	/**
 	 * Executes this Mojo which pulls project property values from Vault.
 	 *
@@ -115,7 +132,7 @@ public class VaultPullMojo extends AbstractMojo {
 			String id = s.getId();
 
 			if (Strings.isNullOrEmpty(id))
-				id = SERVER_DEFAULT_ID;
+				s.setId(id = SERVER_DEFAULT_ID);
 
 			if (SERVER_DEFAULT_ID.equalsIgnoreCase(id))
 				defaultIdCount++;

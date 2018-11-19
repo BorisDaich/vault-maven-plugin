@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.regex.Pattern;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -43,6 +44,7 @@ public class Test_mockito_strange {
 
 	/// I do not understand why this fails!!!
 	@Test
+	//@Ignore // ignored because fails and I do not understand why!!!??
 	public void test_1() {
 		A a = mock(A.class, RETURNS_DEEP_STUBS);
 		String[] m1 = new String[] {
