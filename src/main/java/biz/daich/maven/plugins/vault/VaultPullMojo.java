@@ -38,7 +38,6 @@ import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
-import com.bettercloud.vault.api.Auth;
 import com.deciphernow.maven.plugins.vault.config.Mapping;
 import com.deciphernow.maven.plugins.vault.config.Path;
 import com.deciphernow.maven.plugins.vault.config.Server;
@@ -54,9 +53,13 @@ import lombok.Setter;
 @Mojo(name = "pull", defaultPhase = LifecyclePhase.INITIALIZE)
 public class VaultPullMojo extends AbstractMojo {
 
+	@Setter// setter and getter are for testing convenience
+	@Getter
 	@Parameter(defaultValue = "${project}", readonly = true)
 	protected MavenProject project;
 
+	@Setter// setter and getter are for testing convenience
+	@Getter
 	@Parameter(required = true)
 	protected List<Server> servers;
 
@@ -69,7 +72,7 @@ public class VaultPullMojo extends AbstractMojo {
 
 		public Vault vault(VaultConfig vc);
 	}
-	
+
 	@Setter
 	@Getter
 	protected IVaultFactory vaultFactory = Vault::new;
@@ -87,7 +90,7 @@ public class VaultPullMojo extends AbstractMojo {
 	static final String SERVER_DEFAULT_ID = "default";
 
 	public enum KEY {
-		TOKEN("token"), ROLE_ID("role_id"), SECRET_ID("secred_id");
+		TOKEN("token"), ROLE_ID("role_id"), SECRET_ID("secret_id");
 		public final String value;
 
 		private KEY(String s) {
@@ -138,11 +141,11 @@ public class VaultPullMojo extends AbstractMojo {
 
 			// token
 
-			s.setToken(getValueFromProp(id, token, TOKEN));
+			s.setToken(getValueFromPropIfMissing(id, token, TOKEN));
 			// role_id
-			s.setRole_id(getValueFromProp(id, role_id, ROLE_ID));
+			s.setRole_id(getValueFromPropIfMissing(id, role_id, ROLE_ID));
 			// secret_id
-			s.setSecret_id(getValueFromProp(id, secret_id, SECRET_ID));
+			s.setSecret_id(getValueFromPropIfMissing(id, secret_id, SECRET_ID));
 
 			// now for every server that do pull values and set properties
 			pullServer(s, projectProperties);
@@ -182,7 +185,7 @@ public class VaultPullMojo extends AbstractMojo {
 		while (true) {
 			if (isNullOrEmpty(server.getToken()))
 				isRoleUsed = updateMissingTokenUsingAppRoleAuthFlowOrThrow(server, vaultConfig);
-			final Vault vault = new Vault(vaultConfig);
+			final Vault vault = vaultFactory.vault(vaultConfig);
 			// try as is
 			try {
 				pullVault(vault, server, properties);
@@ -215,7 +218,7 @@ public class VaultPullMojo extends AbstractMojo {
 				getLog().debug("no token for server [" + server.getId() + "] but there is role_id and secret_id. Attempting to get token");
 				// try getting a token by role_id & secret
 				Stopwatch stopwatch = Stopwatch.createStarted();
-				String token = new Auth(vaultConfig).loginByAppRole("approle", server.getRole_id(), server.getSecret_id()).getAuthClientToken();
+				String token = vaultFactory.vault(vaultConfig).auth().loginByAppRole("approle", server.getRole_id(), server.getSecret_id()).getAuthClientToken();
 				getLog().debug("request for a token through appRole flow took " + stopwatch.stop());
 				server.setToken(token);
 				vaultConfig.token(token);
@@ -247,7 +250,14 @@ public class VaultPullMojo extends AbstractMojo {
 		}
 	}
 
-	protected String getValueFromProp(String serverId, String currentValue, KEY valueType) {
+	/**
+	 * if currentValue is null or empty string will try to find it in project properties
+	 * the property name of the form
+	 * <br>
+	 * "vault.server.<SERVER_ID>.[role_id|secret_id|token]"
+	 * 
+	 */
+	protected String getValueFromPropIfMissing(String serverId, String currentValue, KEY valueType) {
 		String propName = null;
 		Object prop = null;
 		if (Strings.isNullOrEmpty(currentValue)) {
@@ -263,6 +273,10 @@ public class VaultPullMojo extends AbstractMojo {
 		return currentValue;
 	}
 
+	/**
+	 * build the property name of the form
+	 * "vault.server.<SERVER_ID>.[role_id|secret_id|token]"
+	 */
 	public static String propName(String serverId, KEY type) {
 		return "vault.server." + serverId + "." + type.value;
 	}
