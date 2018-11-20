@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.deciphernow.maven.plugins.vault.config;
+package biz.daich.maven.plugins.vault.config;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -70,7 +70,7 @@ public class Server implements Serializable {
 	/**
 	 * paths for this server.
 	 */
-	protected List<Path> paths = Arrays.asList();
+	protected List<Path> paths = new ArrayList<>();
 
 	/**
 	 * Initializes a new instance of the {@link Server} class.

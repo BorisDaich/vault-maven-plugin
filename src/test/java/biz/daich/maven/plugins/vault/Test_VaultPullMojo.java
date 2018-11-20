@@ -35,12 +35,12 @@ import org.mockito.Mockito;
 
 import com.bettercloud.vault.Vault;
 import com.bettercloud.vault.VaultException;
-import com.deciphernow.maven.plugins.vault.config.Mapping;
-import com.deciphernow.maven.plugins.vault.config.Path;
-import com.deciphernow.maven.plugins.vault.config.Server;
 
 import biz.daich.maven.plugins.vault.VaultPullMojo.IVaultFactory;
 import biz.daich.maven.plugins.vault.VaultPullMojo.KEY;
+import biz.daich.maven.plugins.vault.config.Mapping;
+import biz.daich.maven.plugins.vault.config.Path;
+import biz.daich.maven.plugins.vault.config.Server;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

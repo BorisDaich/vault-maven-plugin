@@ -23,12 +23,12 @@ import com.bettercloud.vault.SslConfig;
 import com.bettercloud.vault.VaultConfig;
 import com.bettercloud.vault.VaultException;
 import com.bettercloud.vault.api.Auth;
-import com.deciphernow.maven.plugins.vault.config.Mapping;
-import com.deciphernow.maven.plugins.vault.config.Path;
-import com.deciphernow.maven.plugins.vault.config.Server;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 
+import biz.daich.maven.plugins.vault.config.Mapping;
+import biz.daich.maven.plugins.vault.config.Path;
+import biz.daich.maven.plugins.vault.config.Server;
 import lombok.extern.slf4j.Slf4j;
 
 /**
