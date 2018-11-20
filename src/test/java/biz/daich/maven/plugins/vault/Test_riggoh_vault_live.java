@@ -17,6 +17,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.bettercloud.vault.SslConfig;
@@ -39,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 
 @Slf4j
+@Ignore
 public class Test_riggoh_vault_live {
 
 	private static final String RIGGOH_VAULT = "https://vault.riggoh.name:8200";

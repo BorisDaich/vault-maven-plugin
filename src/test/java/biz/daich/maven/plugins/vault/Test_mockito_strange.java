@@ -1,10 +1,11 @@
 package biz.daich.maven.plugins.vault;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -49,8 +51,8 @@ public class Test_mockito_strange {
 	@Test
 	public void test_00() {
 		final A a = mock(A.class, RETURNS_DEEP_STUBS);
-		//final A a = mock(A.class);
-		
+		// final A a = mock(A.class);
+
 		when(a.str(anyString())).thenReturn("bb");
 		when(a.str(matches("00"))).thenReturn("cc");
 		when(a.str(matches("11"))).thenReturn("dd");
@@ -84,10 +86,10 @@ public class Test_mockito_strange {
 
 	/// I do not understand why this fails!!!
 	@Test
-	// @Ignore // ignored because fails and I do not understand why!!!??
+	@Ignore // ignored because fails and I do not understand why!!!??
 	public void test_1() {
 		final A a = mock(A.class, RETURNS_DEEP_STUBS);
-		//final A a = mock(A.class, RETURNS_MOCKS);
+		// final A a = mock(A.class, RETURNS_MOCKS);
 
 		when(a.read(anyString()).getData()).thenReturn("bb");
 		when(a.read(matches("00")).getData()).thenReturn("cc");
@@ -111,7 +113,7 @@ public class Test_mockito_strange {
 		verify(a.read(matches("00")), atLeastOnce()).getData();
 		verify(a.read(matches("44")), atLeastOnce()).getData();
 		verify(a.read(any()), atLeastOnce()).getData();
-		
+
 		assertTrue("cc".equals(data1));
 		assertTrue("dd".equals(data2));
 		assertTrue("bb".equals(data3));

@@ -1,24 +1,17 @@
 # vault-maven-plugin
 
-This Maven plugin supports pull and pushing Maven project properties from secrets stored in [HashiCorp](https://www.hashicorp.com) [Vault](https://www.vaultproject.io/).
+This Maven plugin supports pulling Maven project properties from secrets stored in [HashiCorp](https://www.hashicorp.com) [Vault](https://www.vaultproject.io/).
 
 This is deeply reworked fork of the https://github.com/DecipherNow/vault-maven-plugin 
 
-Important changes:
+<u>***Important changes:***</u>
 
-Support for the Vault's RoleId & SecretId flow see here https://www.vaultproject.io/docs/auth/approle.html
+Support for the Vault's ***approle*** flow see here https://www.vaultproject.io/docs/auth/approle.html
 
-Support for token, RoleId, SecretId to be configured as properties in the user's ~/.m2/settings.xml
+Support for <u>`token`</u>, <u>`role_id`</u>, <u>`secret_id</u>` to be configured as properties in the user's `~/.m2/settings.xml`
 
-that let you have no credentials in the source control.
+So no credentials need to be checked into the source control.
 
-TODO: Boris: 
-
-- [ ] Document the usage 
-
-- [ ] Provide examples 
-
- 
 
 ## Usage
 
@@ -28,9 +21,9 @@ To include the vault-maven-plugin in your project add the following plugin to yo
 <build>
     <plugins>
         <plugin>
-            <groupId>com.deciphernow</groupId>
+            <groupId>biz.daich</groupId>
             <artifactId>vault-maven-plugin</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>2.0.0</version>
         </plugin>
     </plugins>
 </build>
@@ -38,7 +31,27 @@ To include the vault-maven-plugin in your project add the following plugin to yo
 
 ### Pulling Secrets
 
-In order to pull secrets you must add an execution to the plugin.  The following execution will pull secrets from `secret/user` path on the Vault server `https://vault.example.com`.  In particular, this configuration will set the value of the `${project.password}` and `${project.username}` Maven properties to the secrets `${vault.password}` and `${vault.username}` respectively.
+In order to pull secrets you must add an execution to the plugin.  The following execution will pull secrets from `secret/user` path on the Vault server`https://vault.example.com` referenced here as `vault_78`.  In particular, this configuration will set the value of the `${my.secret.password}` and `${my.secret.username}` Maven properties to the secrets `${vault.password}` and `${vault.username}` respectively.
+
+Plugin assumes that in your `~/.m2/settings.xml` you have the credentials to access the Vault server 
+
+it can be a `token` or a `role_id/secret_id` pair 
+
+the properties naming convention in the settings.xml 
+
+`vault.server.<SERVER_ID>.[token|role_id|secret_id]`
+
+so for server with ID **vault_78** it will be:
+
+```xml
+<properties>
+	<vault.server.vault_78.token><THE_TOKEN></vault.server.vault_78.token>
+	<vault.server.vault_78.role_id><THE_ROLE_ID></vault.server.vault_78.role_id>
+	<vault.server.vault_78.secret_id><THE_SECRET_ID></vault.server.vault_78.secret_id> 
+</properties>
+```
+
+plugin will first look for token if not found or failed to login will go for the `role_id/secret_id` pair
 
 ```xml
 <build>
@@ -46,7 +59,7 @@ In order to pull secrets you must add an execution to the plugin.  The following
         <plugin>
             <groupId>com.deciphernow</groupId>
             <artifactId>vault-maven-plugin</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>2.0.0</version>
             <executions>
                 <execution>
                     <id>pull</id>
@@ -57,19 +70,19 @@ In order to pull secrets you must add an execution to the plugin.  The following
                     <configuration>
                         <servers>
                             <server>
-                                <url>https://vault.example.com</url>
-                                <token>bf6ba314-47f1-4b9d-ab87-2b8e53fc640f</token>
+                                <id>vault_78</id>
+                                <url>https://vault.example.com</url>             
                                 <paths>
                                     <path>
                                         <name>secret/user</name>
                                         <mappings>
                                             <mapping>
                                                 <key>vault.password</key>
-                                                <property>project.password</property>
+                                                <property>my.secret.password</property>
                                             </mapping>
                                             <mapping>
                                                 <key>vault.username</key>
-                                                <property>project.username</property>
+                                                <property>my.secret.username</property>
                                             </mapping>
                                         </mappings>
                                     </path>
@@ -84,70 +97,29 @@ In order to pull secrets you must add an execution to the plugin.  The following
 </build>
 ```
 
-Note that the execution will fail if a specified secret key does not exist and that an existing project property will be overwritten.
+Notes:
 
-### Pushing Secrets
-
-In order to pull secrets you must add an execution to the plugin.  The following execution will pull secrets from `secret/user` path on the Vault server `https://vault.example.com`.  In particular, this configuration will set the value of the `${project.password}` and `${project.username}` Maven properties to the secrets `${vault.password}` and `${vault.username}` respectively.
+- `token` or a `role_id/secret_id` pair can be part of the server configuration in the pom.xml in form of 
 
 ```xml
-<build>
-    <plugins>
-        <plugin>
-            <groupId>com.deciphernow</groupId>
-            <artifactId>vault-maven-plugin</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <executions>
-                <execution>
-                    <id>push</id>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>push</goal>
-                    </goals>
-                    <configuration>
-                        <servers>
-                            <server>
-                                <url>https://vault.example.com</url>
-                                <token>bf6ba314-47f1-4b9d-ab87-2b8e53fc640f</token>
-                                <paths>
-                                    <path>
-                                        <name>secret/user</name>
-                                        <mappings>
-                                            <mapping>
-                                                <key>vault.password</key>
-                                                <property>project.password</property>
-                                            </mapping>
-                                            <mapping>
-                                                <key>vault.username</key>
-                                                <property>project.username</property>
-                                            </mapping>
-                                        </mappings>
-                                    </path>
-                                </paths>
-                            </server>
-                        </servers>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-    </plugins>
-</build>
+ <server>
+	...
+	<token>ttttt</token>
+	<secret_id>aaaaaa</secret_id>
+	<role_id>bbbbb</role_id>
+	....
+</server>
 ```
 
-Note that the execution will fail if a specified project property does not exist and that an existing secret value will be overwritten.
+but this is not recommended. 
+
+- The execution will fail if neither is found for a server in configuration or properties.
 
 ## Building
 
 This build uses standard Maven build commands but assumes that the following are installed and configured locally:
 
-1) Java (1.8 or greater)
-1) Maven (3.0 or greater)
-1) Docker
+- Java (1.8 or greater)
 
-## Contributing
+- Maven (3.5 or greater)
 
-1. Fork it
-1. Create your feature branch (`git checkout -b my-new-feature`)
-1. Commit your changes (`git commit -am 'Add some feature'`)
-1. Push to the branch (`git push origin my-new-feature`)
-1. Create new Pull Request
