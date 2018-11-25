@@ -31,9 +31,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Path implements Serializable {
 
-	/**
-	 * that is the name of the secret in a Vault
-	 */
+	/** that is the name of the secret in a Vault. */
 	private String name;
 	/**
 	 * the mappings of this path.

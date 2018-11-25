@@ -54,16 +54,24 @@ import lombok.Setter;
 @Mojo(name = "pull", defaultPhase = LifecyclePhase.INITIALIZE)
 public class VaultPullMojo extends AbstractMojo {
 
-	// getter is for testing convenience
-	@Getter
+	/**
+	 * the maven project (representation of the POM).
+	 */
+	@Getter 	// getter is for testing convenience
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	protected MavenProject project;
 
+	/** The servers. */
 	// getter is for testing convenience
+
+	/**
+	 * servers to connect. Direct mapping of the &lt;servers&gt; configuration tag.
+	 */
 	@Getter
 	@Parameter(required = true)
 	protected List<Server> servers;
 
+	/** The project properties. */
 	protected Properties projectProperties;
 
 	/**
@@ -71,6 +79,13 @@ public class VaultPullMojo extends AbstractMojo {
 	 */
 	public interface IVaultFactory {
 
+		/**
+		 * Vault.
+		 *
+		 * @param vc
+		 *            the VaultConfig instance
+		 * @return an instance of Vault
+		 */
 		public Vault vault(VaultConfig vc);
 	}
 
@@ -88,17 +103,38 @@ public class VaultPullMojo extends AbstractMojo {
 	 */
 	public static final int READ_TIMEOUT_SEC = 30;
 
+	/** The Constant SERVER_DEFAULT_ID. */
 	static final String SERVER_DEFAULT_ID = "default";
 
+	/**
+	 * The Enum KEY.
+	 */
 	public enum KEY {
-		TOKEN("token"), ROLE_ID("role_id"), SECRET_ID("secret_id");
+
+		/** The token. */
+		TOKEN("token"),
+		/** The role id. */
+		ROLE_ID("role_id"),
+		/** The secret id. */
+		SECRET_ID("secret_id");
+
+		/** The value. */
 		public final String value;
 
+		/**
+		 * Instantiates a new key.
+		 *
+		 * @param s
+		 *            the s
+		 */
 		private KEY(String s) {
 			value = s;
 		}
 	}
 
+	/**
+	 * Instantiates a new vault pull mojo.
+	 */
 	public VaultPullMojo() {
 		super();
 	}
@@ -106,7 +142,14 @@ public class VaultPullMojo extends AbstractMojo {
 	/**
 	 * c'tor for testing
 	 * 
-	 * will set the IVaultFactory vaultFactory only if argument is not null
+	 * will set the IVaultFactory vaultFactory only if argument is not null.
+	 *
+	 * @param project
+	 *            the project
+	 * @param servers
+	 *            the servers
+	 * @param vaultFactory
+	 *            the vault factory
 	 */
 	protected VaultPullMojo(MavenProject project, List<Server> servers, IVaultFactory vaultFactory) {
 		super();
@@ -122,6 +165,7 @@ public class VaultPullMojo extends AbstractMojo {
 	 * @throws MojoExecutionException
 	 *             if an exception is thrown based upon the project configuration
 	 * @throws MojoFailureException
+	 *             the mojo failure exception
 	 */
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -176,12 +220,16 @@ public class VaultPullMojo extends AbstractMojo {
 	 * -- failed? try to get a token through role_id/secret_id auth flow
 	 * no token? - try to get a token through role_id/secret_id auth flow
 	 * 
-	 * if failed - than the plugin failed
-	 * 
+	 * if failed - than the plugin failed.
+	 *
+	 * @param server
+	 *            the server
+	 * @param properties
+	 *            the properties
+	 * @throws MojoFailureException
+	 *             the mojo failure exception
 	 * @throws MojoExecutionException
-	 * 
-	 * @throws VaultException
-	 * 
+	 *             the mojo execution exception
 	 */
 	protected void pullServer(Server server, Properties properties) throws MojoFailureException, MojoExecutionException {
 
@@ -214,7 +262,7 @@ public class VaultPullMojo extends AbstractMojo {
 				{
 					String errorMsg = "Failed to access the Vault server [" + server.getId() + "] with url: [" + server.getUrl() + "] with the role_id/secret_id. Reason: " + e.getMessage();
 					getLog().error(errorMsg);
-					throw new MojoFailureException(errorMsg);
+					throw new MojoFailureException(errorMsg, e);
 				} else {
 					getLog().warn("Failed to access the Vault server [" + server.getId() + "] with url: [" + server.getUrl() + "] using provided token will try with the role_id/secret_id if present");
 					vaultConfig.token(null);
@@ -227,7 +275,15 @@ public class VaultPullMojo extends AbstractMojo {
 	}
 
 	/**
+	 * Update missing token using app role auth flow or throw.
+	 *
+	 * @param server
+	 *            the server
+	 * @param vaultConfig
+	 *            the vault config
 	 * @return true if token retrieval and update was successful
+	 * @throws MojoFailureException
+	 *             the mojo failure exception
 	 */
 	private boolean updateMissingTokenUsingAppRoleAuthFlowOrThrow(Server server, VaultConfig vaultConfig) throws MojoFailureException {
 		// if we have role_id and secred_id we can try to get a token
@@ -249,12 +305,24 @@ public class VaultPullMojo extends AbstractMojo {
 				throw new MojoFailureException(errorMsg);
 			}
 		} else { // no token and no role_id and secred_id there is nothing we can do here...
-			String errorMsg = "There is no token or role_id/secret_id for the server [" + server.getId() + "] with url: [" + server.getUrl() + "]  Nothing we can do!";
+			String errorMsg = "There is no good token and one of role_id/secret_id is missing for the server [" + server.getId() + "] with url: [" + server.getUrl() + "]  Nothing we can do!";
 			getLog().error(errorMsg);
 			throw new MojoFailureException(errorMsg);
 		}
 	}
 
+	/**
+	 * Pull vault.
+	 *
+	 * @param vault
+	 *            the vault
+	 * @param server
+	 *            the server
+	 * @param properties
+	 *            the properties
+	 * @throws VaultException
+	 *             the vault exception
+	 */
 	protected void pullVault(Vault vault, Server server, Properties properties) throws VaultException {
 		for (Path path : server.getPaths()) {
 			Map<String, String> secrets = vault.logical().read(path.getName()).getData();
@@ -272,8 +340,15 @@ public class VaultPullMojo extends AbstractMojo {
 	 * if currentValue is null or empty string will try to find it in project properties
 	 * the property name of the form
 	 * <br>
-	 * "vault.server.<SERVER_ID>.[role_id|secret_id|token]"
-	 * 
+	 * "vault.server.&lt;SERVER_ID&gt;.[role_id|secret_id|token]"
+	 *
+	 * @param serverId
+	 *            the server id
+	 * @param currentValue
+	 *            the current value
+	 * @param valueType
+	 *            the value type
+	 * @return the value from prop if missing
 	 */
 	protected String getValueFromPropIfMissing(String serverId, String currentValue, KEY valueType) {
 		String propName = null;
@@ -293,7 +368,13 @@ public class VaultPullMojo extends AbstractMojo {
 
 	/**
 	 * build the property name of the form
-	 * "vault.server.<SERVER_ID>.[role_id|secret_id|token]"
+	 * "vault.server.&lt;SERVER_ID&gt;.[role_id|secret_id|token]"
+	 *
+	 * @param serverId
+	 *            the server id
+	 * @param type
+	 *            the type
+	 * @return the string
 	 */
 	public static String propName(String serverId, KEY type) {
 		return "vault.server." + serverId + "." + type.value;

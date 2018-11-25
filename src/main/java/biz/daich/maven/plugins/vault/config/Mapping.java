@@ -17,7 +17,6 @@
 package biz.daich.maven.plugins.vault.config;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,13 +25,45 @@ import lombok.NoArgsConstructor;
 /**
  * Represents a mapping between a Vault key and a Maven property.
  */
+
+/* (non-Javadoc)
+ * @see java.lang.Object#toString()
+ */
+
+/* (non-Javadoc)
+ * @see java.lang.Object#toString()
+ */
 @Data
+
+/**
+ * Instantiates a new mapping.
+ */
 @NoArgsConstructor
+
+/**
+ * Instantiates a new mapping.
+ *
+ * @param key
+ *            the key
+ * @param property
+ *            the property
+ */
+
+/**
+ * Instantiates a new mapping.
+ *
+ * @param key
+ *            the key
+ * @param property
+ *            the property
+ */
 @AllArgsConstructor
 public class Mapping implements Serializable {
 
+	/** The key. */
 	private String key;
 
+	/** The property. */
 	private String property;
 
 }

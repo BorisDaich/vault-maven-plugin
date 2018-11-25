@@ -231,7 +231,7 @@ public class Test_VaultPullMojo {
 			fail("was suppose to throw");
 		} catch (Exception e) {
 			assertTrue(e.getClass().equals(MojoFailureException.class));
-			assertEquals("There is no token or role_id/secret_id for the server [" + SERVER_ID_1 + "] with url: [" + URL1 + "]  Nothing we can do!", e.getMessage());
+			assertEquals("There is no good token and one of role_id/secret_id is missing for the server [" + SERVER_ID_1 + "] with url: [" + URL1 + "]  Nothing we can do!", e.getMessage());
 		}
 
 	}
@@ -363,7 +363,6 @@ public class Test_VaultPullMojo {
 
 		ArgumentCaptor<String> strCaptor = ArgumentCaptor.forClass(String.class);
 		verify(log, times(3)).warn(strCaptor.capture());
-		Pattern pattern = Pattern.compile(".*MUST NOT.*", Pattern.MULTILINE);
 
 		List<String> allValues = strCaptor.getAllValues();
 		assertEquals(3, allValues.size());

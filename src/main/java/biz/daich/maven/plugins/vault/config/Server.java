@@ -61,7 +61,7 @@ public class Server implements Serializable {
 
 	/**
 	 * the URL of this server.
-	 * */
+	 */
 	protected String url;
 	/**
 	 * the token used to access this server.
@@ -93,8 +93,5 @@ public class Server implements Serializable {
 		this.token = token;
 		this.url = url;
 	}
-
-
-	
 
 }
